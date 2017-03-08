@@ -1,0 +1,16 @@
+{
+  "name": "we-schedule-mongodb",
+  "version": "1.0.3",
+  "description": "Interface for operating mongodb in grape-cms & we-schedule",
+  "main": "./dist/index.js",
+  "author": "Liu Cong",
+  "license": "MIT",
+  "dependencies": {
+    "mongoose": "^4.4.19",
+    "fis-parser-babel-6.x": "^1.0.0",
+    "babel-plugin-transform-runtime": "^6.9.0"
+  },
+  "scripts": {
+    "release": "rm -rf dist & fis3 release -d ./dist"
+  }
+}
