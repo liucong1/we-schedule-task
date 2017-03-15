@@ -5,15 +5,12 @@
 
 'use strict';
 
-const http = require('http');
-const querystring = require('querystring');
 const mongoose = require('mongoose');
 const Schedule = require('we-schedule-mongodb');
-const request = require('request');
+const crypto = require('crypto');
+const restler = require('restler');
 
 mongoose.connect("mongodb://127.0.0.1:27017/cms");
-
-let url = "http://127.0.0.1:9203/cms/dash/timedPublish/doPublish";
 
 getAndPublishTask();
 
@@ -21,10 +18,10 @@ startInterval();
 
 //开始定时检查
 function startInterval(){
-        //每隔一分钟，检查一次未执行的任务
-        setInterval(async function(){
-            getAndPublishTask();
-        },1000*60);
+    //每隔一分钟，检查一次未执行的任务
+    setInterval(async function(){
+        getAndPublishTask();
+    },1000*60);
 }
 
 //获取并发布任务
@@ -34,20 +31,24 @@ async function getAndPublishTask(){
         //当前的时间戳
         let timeStampNow =  new Date().getTime();
         if(out.length > 0){
-            console.log(`$$start$$ 当前时间戳：${timeStampNow} 将执行定时任务：${out.length}个`);
+            console.log(`【search DB】current time is：${new Date()},there are ${out.length} tasks to be executed!`);
+            //用于判断是否发送请求执行定时任务
+            let needExecute = false;
             out.forEach(
                 (value,index) => {
-                    console.log(`$$execute$$ 开始执行第${index}个任务，任务id为${value._id}`);
                     if( timeStampNow >= Number(value.exceptTimestamp) ){
-                        console.log(`任务id为${value._id}的定时任务已到执行时间。post参数为`,value);
-                        request.post(url,{json:value},function(error,response,body){
-                            console.log(`_id为${value._id}定时任务的第${value.currentRetry}次执行结果为：`,body);
-                        });
-                    }else{
-                        console.log(`$$Not yet time$$ 未到执行时间，任务稍后执行！`);
+                        needExecute = true;
+                        console.log(`【execute】It's time to execute the task which's taskId is ${value._id}. Its parameters are `,value.toString());
                     }
                 }
             );
+            if(needExecute){
+                restler.get('http://127.0.0.1:9203/cms/dash/timedPublish/needPublish').on('complete', function(result) {
+                    console.log(`【execute result】Tasks has been completed and result is`, result );
+                });
+            }else{
+                console.log(`【abandon】No tasks are expected to be executed now!`);
+            }
         }
     }catch(e){
         console.log(e);

@@ -12,5 +12,6 @@ fis.set('project.ignore', [
     '*.lock',
     '*.json',
     'fis-conf.js',
-    '*.log'
+    '*.log',
+    'log/**'
 ]);

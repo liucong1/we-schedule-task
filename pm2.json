@@ -9,7 +9,7 @@
       "error_file" : "./log/pm2log/pm2.error.log",
       "out_file" : "./log/pm2log/pm2.out.log",
       "log_date_format" : "YYYY-MM-DD HH:mm Z",
-      "instances" : 1,
+      "exec_mode"   : "fork",
       "cwd"         : ".",
       "max_memory_restart" : "100M"
     }

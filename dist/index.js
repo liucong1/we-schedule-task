@@ -16,7 +16,7 @@ var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 //获取并发布任务
 var getAndPublishTask = function () {
     var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2() {
-        var out, timeStampNow;
+        var out, timeStampNow, needExecute;
         return _regenerator2.default.wrap(function _callee2$(_context2) {
             while (1) {
                 switch (_context2.prev = _context2.next) {
@@ -29,17 +29,26 @@ var getAndPublishTask = function () {
                         out = _context2.sent;
 
                         //当前的时间戳
-                        timeStampNow = Date.parse(new Date());
+                        timeStampNow = new Date().getTime();
 
                         if (out.length > 0) {
-                            out.forEach(function (value) {
+                            console.log('\u3010search DB\u3011current time is\uFF1A' + new Date() + ',there are ' + out.length + ' tasks to be executed!');
+                            //用于判断是否发送请求执行定时任务
+                            needExecute = false;
+
+                            out.forEach(function (value, index) {
                                 if (timeStampNow >= Number(value.exceptTimestamp)) {
-                                    console.log(value);
-                                    request.post(url, { json: value }, function (error, response, body) {
-                                        console.log('_id\u4E3A' + value._id + '\u7684\u5B9A\u65F6\u4EFB\u52A1\u6267\u884C\u7ED3\u679C\u4E3A\uFF1A', body);
-                                    });
+                                    needExecute = true;
+                                    console.log('\u3010execute\u3011It\'s time to execute the task which\'s taskId is ' + value._id + '. Its parameters are ', value.toString());
                                 }
                             });
+                            if (needExecute) {
+                                restler.get('http://127.0.0.1:9203/cms/dash/timedPublish/needPublish').on('complete', function (result) {
+                                    console.log('\u3010execute result\u3011Tasks has been completed and result is', result);
+                                });
+                            } else {
+                                console.log('\u3010abandon\u3011No tasks are expected to be executed now!');
+                            }
                         }
                         _context2.next = 11;
                         break;
@@ -65,19 +74,16 @@ var getAndPublishTask = function () {
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var http = require('http');
-var querystring = require('querystring');
 var mongoose = require('mongoose');
 var Schedule = require('we-schedule-mongodb');
-var request = require('request');
+var crypto = require('crypto');
+var restler = require('restler');
 
 mongoose.connect("mongodb://127.0.0.1:27017/cms");
 
-var url = "http://127.0.0.1:9203/cms/dash/timedPublish/doPublish";
-
 getAndPublishTask();
 
-// startInterval();
+startInterval();
 
 //开始定时检查
 function startInterval() {
