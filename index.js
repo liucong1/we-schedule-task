@@ -7,7 +7,6 @@
 
 const mongoose = require('mongoose');
 const Schedule = require('we-schedule-mongodb');
-const crypto = require('crypto');
 const restler = require('restler');
 
 mongoose.connect("mongodb://127.0.0.1:27017/cms");
@@ -19,7 +18,7 @@ startInterval();
 //开始定时检查
 function startInterval(){
     //每隔一分钟，检查一次未执行的任务
-    setInterval(async function(){
+    setInterval(function(){
         getAndPublishTask();
     },1000*60);
 }

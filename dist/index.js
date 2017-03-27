@@ -15,18 +15,18 @@ var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
 //获取并发布任务
 var getAndPublishTask = function () {
-    var _ref2 = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee2() {
+    var _ref = (0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
         var out, timeStampNow, needExecute;
-        return _regenerator2.default.wrap(function _callee2$(_context2) {
+        return _regenerator2.default.wrap(function _callee$(_context) {
             while (1) {
-                switch (_context2.prev = _context2.next) {
+                switch (_context.prev = _context.next) {
                     case 0:
-                        _context2.prev = 0;
-                        _context2.next = 3;
+                        _context.prev = 0;
+                        _context.next = 3;
                         return Schedule.getAllUnpublishedTask();
 
                     case 3:
-                        out = _context2.sent;
+                        out = _context.sent;
 
                         //当前的时间戳
                         timeStampNow = new Date().getTime();
@@ -50,25 +50,25 @@ var getAndPublishTask = function () {
                                 console.log('\u3010abandon\u3011No tasks are expected to be executed now!');
                             }
                         }
-                        _context2.next = 11;
+                        _context.next = 11;
                         break;
 
                     case 8:
-                        _context2.prev = 8;
-                        _context2.t0 = _context2['catch'](0);
+                        _context.prev = 8;
+                        _context.t0 = _context['catch'](0);
 
-                        console.log(_context2.t0);
+                        console.log(_context.t0);
 
                     case 11:
                     case 'end':
-                        return _context2.stop();
+                        return _context.stop();
                 }
             }
-        }, _callee2, this, [[0, 8]]);
+        }, _callee, this, [[0, 8]]);
     }));
 
     return function getAndPublishTask() {
-        return _ref2.apply(this, arguments);
+        return _ref.apply(this, arguments);
     };
 }();
 
@@ -76,7 +76,6 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var mongoose = require('mongoose');
 var Schedule = require('we-schedule-mongodb');
-var crypto = require('crypto');
 var restler = require('restler');
 
 mongoose.connect("mongodb://127.0.0.1:27017/cms");
@@ -88,18 +87,7 @@ startInterval();
 //开始定时检查
 function startInterval() {
     //每隔一分钟，检查一次未执行的任务
-    setInterval((0, _asyncToGenerator3.default)(_regenerator2.default.mark(function _callee() {
-        return _regenerator2.default.wrap(function _callee$(_context) {
-            while (1) {
-                switch (_context.prev = _context.next) {
-                    case 0:
-                        getAndPublishTask();
-
-                    case 1:
-                    case 'end':
-                        return _context.stop();
-                }
-            }
-        }, _callee, this);
-    })), 1000 * 60);
+    setInterval(function () {
+        getAndPublishTask();
+    }, 1000 * 60);
 }
